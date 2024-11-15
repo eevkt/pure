@@ -1,212 +1,888 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management System</title>
+    <title>Al-Rafidain Vocational School</title>
     <style>
+        /* General Styling */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            scroll-behavior: smooth;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1b1b2f;
-            color: #e4e4e4;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
             display: flex;
-            height: 100vh;
+            flex-direction: column;
+            overflow-x: hidden;
+            margin: 0;
         }
-
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Landing Screen */
+        #landing-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f0f3e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s;
+        }
+        #landing-screen h1 {
+            font-size: 3rem;
+            color: #c9a7f5;
+            text-align: center;
+            animation: fadeInOut 5s linear forwards;
+        }
+        #landing-screen p {
+            font-size: 1.5rem;
+            color: #e0e0e0;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        /* Sidebar */
         .sidebar {
             width: 250px;
-            background-color: #21213b;
+            background-color: #0f0f3e;
+            color: #e0e0e0;
             height: 100vh;
             padding: 1rem;
-            overflow-y: auto;
             position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
         }
-
         .sidebar h2 {
-            color: #d4af37;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             text-align: center;
             margin-bottom: 1rem;
+            color: #c9a7f5;
         }
-
         .sidebar ul {
             list-style: none;
             padding: 0;
         }
-
         .sidebar li {
             margin: 0.5rem 0;
         }
-
         .sidebar a {
             display: block;
-            text-decoration: none;
-            color: #e4e4e4;
+            color: #e0e0e0;
             padding: 0.5rem;
             border-radius: 5px;
             transition: background-color 0.3s;
         }
-
         .sidebar a:hover {
-            background-color: #6a0572;
+            background-color: #5c33a2;
         }
-
+        /* Main Content */
         .main-content {
             margin-left: 260px;
             padding: 2rem;
             flex-grow: 1;
             overflow-y: auto;
+            background-color: #13132b;
+            animation: fadeIn 1.5s;
         }
-
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* News Section */
+        .news-section {
+            background-color: #26264f;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .news-section h2 {
+            font-size: 2rem;
+            color: #c9a7f5;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #5c33a2;
+            padding-bottom: 0.5rem;
+        }
+        .news-article {
+            background-color: #1f1f3f;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .news-article:hover {
+            transform: translateY(-5px);
+            background-color: #2b2b58;
+        }
+        .news-article h3 {
+            font-size: 1.5rem;
+            color: #c9a7f5;
+        }
+        .news-article p {
+            margin-top: 0.5rem;
+            color: #b0b0d0;
+        }
+        .full-news-view {
+            display: none;
+            background-color: #1f1f3f;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+        .full-news-view img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .back-button {
+            padding: 0.5rem 1rem;
+            background-color: #5c33a2;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .back-button:hover {
+            background-color: #764cbd;
+        }
+        /* Student Cards */
         .student-card {
-            background-color: #2d2d4a;
+            background-color: #1f1f3f;
             padding: 1.5rem;
             margin: 1rem 0;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease-in-out, background-color 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            justify-content: space-between;
+            transition: box-shadow 0.3s;
         }
-
         .student-card:hover {
-            transform: scale(1.03);
-            background-color: #353555;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
         }
-
         .student-card img {
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #6a0572;
+            border: 2px solid #5c33a2;
         }
-
         .student-info {
             flex-grow: 1;
+            margin-left: 1rem;
         }
-
         .student-info h3 {
-            margin-bottom: 0.5rem;
-            color: #d4af37;
+            font-size: 1.5rem;
+            color: #c9a7f5;
         }
-
         .student-info p {
-            margin: 0.3rem 0;
+            margin: 0.2rem 0;
+            color: #b0b0d0;
         }
-
-        .action-btn {
+        .show-info-btn {
             padding: 0.5rem 1rem;
-            background-color: #6a0572;
-            color: white;
+            background-color: #5c33a2;
+            color: #e0e0e0;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
-        .action-btn:hover {
-            background-color: #a832a4;
+        .show-info-btn:hover {
+            background-color: #764cbd;
         }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #6a0572;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
+        .student-details {
+            display: none;
+            margin-top: 1rem;
+            background-color: #26264f;
+            padding: 1rem;
+            border-radius: 8px;
         }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
+        /* Counter Widget */
+        .counter {
+            font-size: 1.8rem;
+            color: #c9a7f5;
+            margin: 1rem 0;
+        }
+        /* Clock Widget */
+        #clock {
+            font-size: 1.5rem;
+            color: #c9a7f5;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            padding: 0.5rem;
+            background-color: #5c33a2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            transition: background-color 0.3s;
+        }
+        .dark-mode-toggle:hover {
+            background-color: #764cbd;
+        }
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
             }
-            100% {
-                transform: rotate(360deg);
+            .main-content {
+                margin-left: 210px;
+                padding: 1.5rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 1rem 0.5rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .student-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .student-card img {
+                width: 80px;
+                height: 80px;
+            }
+            .news-section {
+                padding: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .news-section h2 {
+                font-size: 1.5rem;
+            }
+            .sidebar h2 {
+                font-size: 1.2rem;
+            }
+            .student-card img {
+                width: 70px;
+                height: 70px;
             }
         }
     </style>
 </head>
-
 <body>
+    <!-- Landing Screen -->
+    <div id="landing-screen">
+        <h1>Welcome to Al-Rafidain Vocational School</h1>
+        <p>Website made by the Cybersecurity Team</p>
+    </div>
     <div class="sidebar">
         <h2>Student List</h2>
         <ul id="student-list">
             <!-- Sidebar links will be populated here -->
         </ul>
     </div>
-
     <div class="main-content">
-        <div id="loader" class="loader"></div>
+        <!-- News Section -->
+        <div id="news-articles">
+            <!-- News articles will be dynamically added here -->
+        </div>
+        <!-- Full News View -->
+        <div id="full-news-view" class="full-news-view">
+            <!-- Full news details will be displayed here -->
+        </div>
+        <!-- Clock Widget -->
+        <div id="clock"></div>
+        <!-- Counters -->
+        <div class="counter">Total Students: 64</div>
+        <div class="counter">Total Visitors: <span id="visitor-counter">0</span></div>
+        <!-- Search Bar -->
+        <input type="text" class="search-bar" id="search-bar" placeholder="Search students...">
+        <!-- Student Section -->
         <div id="student-container" style="display: none;">
             <!-- Student cards will be rendered here -->
         </div>
     </div>
-
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
     <script>
-        async function fetchStudents() {
-            const loader = document.getElementById('loader');
+        // Wait for the window to load before displaying the landing screen
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                document.getElementById('landing-screen').style.display = 'none';
+            }, 5000); // Hide landing screen after 5 seconds
+        });
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Get the current time for the clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Example student data
+        const students = [
+            { name: 'Ali Hassan', age: 16, grade: '10th', behavior: 'Excellent', photo: 'student1.jpg' },
+            { name: 'Sara Ahmed', age: 17, grade: '11th', behavior: 'Good', photo: 'student2.jpg' },
+            { name: 'Mohammed Sami', age: 18, grade: '12th', behavior: 'Satisfactory', photo: 'student3.jpg' },
+        ];
+
+        // Display students
+        function displayStudents() {
             const container = document.getElementById('student-container');
-            const list = document.getElementById('student-list');
+            container.innerHTML = '';
+            students.forEach(student => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                studentCard.innerHTML = `
+                    <img src="${student.photo}" alt="${student.name}'s photo">
+                    <div class="student-info">
+                        <h3>${student.name}</h3>
+                    </div>
+                    <button class="show-info-btn" onclick="toggleStudentDetails('${student.name}')">Show Info</button>
+                    <div class="student-details" id="details-${student.name}">
+                        <p>Age: ${student.age}</p>
+                        <p>Grade: ${student.grade}</p>
+                        <p>Behavior: ${student.behavior}</p>
+                    </div>
+                `;
+                container.appendChild(studentCard);
+            });
+            container.style.display = 'block';
+        }
 
-            try {
-                const response = await fetch('/students');
-                const students = await response.json();
-                loader.style.display = 'none';
-                container.style.display = 'block';
-
-                container.innerHTML = '';
-                list.innerHTML = '';
-
-                for (const [name, data] of Object.entries(students)) {
-                    // Sidebar link
-                    const listItem = document.createElement('li');
-                    const link = document.createElement('a');
-                    link.href = '#';
-                    link.textContent = name;
-                    link.onclick = () => displayStudentCard(name, data);
-                    listItem.appendChild(link);
-                    list.appendChild(listItem);
-
-                    // Initial display of student cards
-                    displayStudentCard(name, data);
-                }
-            } catch (error) {
-                console.error('Error fetching students:', error);
-                loader.style.display = 'none';
-                container.innerHTML = '<p>Error loading student data. Please try again later.</p>';
+        function toggleStudentDetails(name) {
+            const detailsDiv = document.getElementById(`details-${name}`);
+            if (detailsDiv.style.display === 'none' || !detailsDiv.style.display) {
+                detailsDiv.style.display = 'block';
+            } else {
+                detailsDiv.style.display = 'none';
             }
         }
+        displayStudents();
 
-        function displayStudentCard(name, data) {
-            const container = document.getElementById('student-container');
-            container.innerHTML = `
-                <div class="student-card">
-                    <img src="${data.photo}" alt="${name}'s photo">
-                    <div class="student-info">
-                        <h3>${name}</h3>
-                        <p>Age: ${data.age} years old</p>
-                        <p>Grade: ${data.grade}</p>
-                        <p>Behavior: ${data.behavior}</p>
-                    </div>
-                    <button class="action-btn" onclick="alert('Feature not implemented yet')">Edit Details</button>
-                </div>
-            `;
+        // Example news data
+        const news = [
+            { title: 'School Reopens for New Term', content: 'The school will reopen on September 15th. All students are expected to attend.', image: 'news1.jpg' },
+            { title: 'New Extracurricular Activities', content: 'A variety of new extracurricular activities will be offered this year.', image: 'news2.jpg' },
+        ];
+
+        // Display news
+        function displayNews() {
+            const articlesContainer = document.getElementById('news-articles');
+            articlesContainer.innerHTML = '';
+            news.forEach((article, index) => {
+                const newsArticle = document.createElement('div');
+                newsArticle.className = 'news-article';
+                newsArticle.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.content.substring(0, 50)}...</p>
+                `;
+                newsArticle.addEventListener('click', () => showFullNewsView(index, article));
+                articlesContainer.appendChild(newsArticle);
+            });
         }
 
-        // Initial fetch of students on page load
-        fetchStudents();
+        function showFullNewsView(index, article) {
+            const container = document.getElementById('full-news-view');
+            container.innerHTML = `
+                <h2>${article.title}</h2>
+                <img src="${article.image}" alt="${article.title}">
+                <p>${article.content}</p>
+                <button class="back-button" onclick="hideFullNewsView()">Back</button>
+            `;
+            document.getElementById('news-articles').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function hideFullNewsView() {
+            document.getElementById('full-news-view').style.display = 'none';
+            document.getElementById('news-articles').style.display = 'block';
+        }
+
+        displayNews();
     </script>
 </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Rafidain Vocational School</title>
+    <style>
+        /* General Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            margin: 0;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Landing Screen */
+        #landing-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f0f3e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s;
+        }
+        #landing-screen h1 {
+            font-size: 3rem;
+            color: #c9a7f5;
+            text-align: center;
+            animation: fadeInOut 5s linear forwards;
+        }
+        #landing-screen p {
+            font-size: 1.5rem;
+            color: #e0e0e0;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #0f0f3e;
+            color: #e0e0e0;
+            height: 100vh;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar h2 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #c9a7f5;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin: 0.5rem 0;
+        }
+        .sidebar a {
+            display: block;
+            color: #e0e0e0;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #5c33a2;
+        }
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: #13132b;
+            animation: fadeIn 1.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* News Section */
+        .news-section {
+            background-color: #26264f;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .news-section h2 {
+            font-size: 2rem;
+            color: #c9a7f5;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #5c33a2;
+            padding-bottom: 0.5rem;
+        }
+        .news-article {
+            background-color: #1f1f3f;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .news-article:hover {
+            transform: translateY(-5px);
+            background-color: #2b2b58;
+        }
+        .news-article h3 {
+            font-size: 1.5rem;
+            color: #c9a7f5;
+        }
+        .news-article p {
+            margin-top: 0.5rem;
+            color: #b0b0d0;
+        }
+        .full-news-view {
+            display: none;
+            background-color: #1f1f3f;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+        .full-news-view img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .back-button {
+            padding: 0.5rem 1rem;
+            background-color: #5c33a2;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .back-button:hover {
+            background-color: #764cbd;
+        }
+        /* Student Cards */
+        .student-card {
+            background-color: #1f1f3f;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: box-shadow 0.3s;
+        }
+        .student-card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+        .student-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #5c33a2;
+        }
+        .student-info {
+            flex-grow: 1;
+            margin-left: 1rem;
+        }
+        .student-info h3 {
+            font-size: 1.5rem;
+            color: #c9a7f5;
+        }
+        .student-info p {
+            margin: 0.2rem 0;
+            color: #b0b0d0;
+        }
+        .show-info-btn {
+            padding: 0.5rem 1rem;
+            background-color: #5c33a2;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .show-info-btn:hover {
+            background-color: #764cbd;
+        }
+        .student-details {
+            display: none;
+            margin-top: 1rem;
+            background-color: #26264f;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        /* Counter Widget */
+        .counter {
+            font-size: 1.8rem;
+            color: #c9a7f5;
+            margin: 1rem 0;
+        }
+        /* Clock Widget */
+        #clock {
+            font-size: 1.5rem;
+            color: #c9a7f5;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            padding: 0.5rem;
+            background-color: #5c33a2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            transition: background-color 0.3s;
+        }
+        .dark-mode-toggle:hover {
+            background-color: #764cbd;
+        }
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 210px;
+                padding: 1.5rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 1rem 0.5rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .student-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .student-card img {
+                width: 80px;
+                height: 80px;
+            }
+            .news-section {
+                padding: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .news-section h2 {
+                font-size: 1.5rem;
+            }
+            .sidebar h2 {
+                font-size: 1.2rem;
+            }
+            .student-card img {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Screen -->
+    <div id="landing-screen">
+        <h1>Welcome to Al-Rafidain Vocational School</h1>
+        <p>Website made by the Cybersecurity Team</p>
+    </div>
+    <div class="sidebar">
+        <h2>Student List</h2>
+        <ul id="student-list">
+            <!-- Sidebar links will be populated here -->
+        </ul>
+    </div>
+    <div class="main-content">
+        <!-- News Section -->
+        <div id="news-articles">
+            <!-- News articles will be dynamically added here -->
+        </div>
+        <!-- Full News View -->
+        <div id="full-news-view" class="full-news-view">
+            <!-- Full news details will be displayed here -->
+        </div>
+        <!-- Clock Widget -->
+        <div id="clock"></div>
+        <!-- Counters -->
+        <div class="counter">Total Students: 64</div>
+        <div class="counter">Total Visitors: <span id="visitor-counter">0</span></div>
+        <!-- Search Bar -->
+        <input type="text" class="search-bar" id="search-bar" placeholder="Search students...">
+        <!-- Student Section -->
+        <div id="student-container" style="display: none;">
+            <!-- Student cards will be rendered here -->
+        </div>
+    </div>
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <script>
+        // Wait for the window to load before displaying the landing screen
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                document.getElementById('landing-screen').style.display = 'none';
+            }, 5000); // Hide landing screen after 5 seconds
+        });
 
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Get the current time for the clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Example student data
+        const students = [
+            { name: 'Ali Hassan', age: 16, grade: '10th', behavior: 'Excellent', photo: 'student1.jpg' },
+            { name: 'Sara Ahmed', age: 17, grade: '11th', behavior: 'Good', photo: 'student2.jpg' },
+            { name: 'Mohammed Sami', age: 18, grade: '12th', behavior: 'Satisfactory', photo: 'student3.jpg' },
+        ];
+
+        // Display students
+        function displayStudents() {
+            const container = document.getElementById('student-container');
+            container.innerHTML = '';
+            students.forEach(student => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                studentCard.innerHTML = `
+                    <img src="${student.photo}" alt="${student.name}'s photo">
+                    <div class="student-info">
+                        <h3>${student.name}</h3>
+                    </div>
+                    <button class="show-info-btn" onclick="toggleStudentDetails('${student.name}')">Show Info</button>
+                    <div class="student-details" id="details-${student.name}">
+                        <p>Age: ${student.age}</p>
+                        <p>Grade: ${student.grade}</p>
+                        <p>Behavior: ${student.behavior}</p>
+                    </div>
+                `;
+                container.appendChild(studentCard);
+            });
+            container.style.display = 'block';
+        }
+
+        function toggleStudentDetails(name) {
+            const detailsDiv = document.getElementById(`details-${name}`);
+            if (detailsDiv.style.display === 'none' || !detailsDiv.style.display) {
+                detailsDiv.style.display = 'block';
+            } else {
+                detailsDiv.style.display = 'none';
+            }
+        }
+        displayStudents();
+
+        // Example news data
+        const news = [
+            { title: 'School Reopens for New Term', content: 'The school will reopen on September 15th. All students are expected to attend.', image: 'news1.jpg' },
+            { title: 'New Extracurricular Activities', content: 'A variety of new extracurricular activities will be offered this year.', image: 'news2.jpg' },
+        ];
+
+        // Display news
+        function displayNews() {
+            const articlesContainer = document.getElementById('news-articles');
+            articlesContainer.innerHTML = '';
+            news.forEach((article, index) => {
+                const newsArticle = document.createElement('div');
+                newsArticle.className = 'news-article';
+                newsArticle.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.content.substring(0, 50)}...</p>
+                `;
+                newsArticle.addEventListener('click', () => showFullNewsView(index, article));
+                articlesContainer.appendChild(newsArticle);
+            });
+        }
+
+        function showFullNewsView(index, article) {
+            const container = document.getElementById('full-news-view');
+            container.innerHTML = `
+                <h2>${article.title}</h2>
+                <img src="${article.image}" alt="${article.title}">
+                <p>${article.content}</p>
+                <button class="back-button" onclick="hideFullNewsView()">Back</button>
+            `;
+            document.getElementById('news-articles').style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        function hideFullNewsView() {
+            document.getElementById('full-news-view').style.display = 'none';
+            document.getElementById('news-articles').style.display = 'block';
+        }
+
+        displayNews();
+    </script>
+</body>
 </html>
