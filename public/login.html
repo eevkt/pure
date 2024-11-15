@@ -1,0 +1,89 @@
+<!-- File: public/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #1a1a2e;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: #2d2d4a;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            background-color: #6a0572;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            background-color: #a832a4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" class="input-field" placeholder="Enter your username">
+        <input type="password" id="password" class="input-field" placeholder="Enter your password">
+        <button class="btn" onclick="handleLogin()">Login</button>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        window.location.href = '/';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Please enter both username and password.');
+            }
+        }
+    </script>
+</body>
+
+</html>
