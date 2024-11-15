@@ -1,14 +1,14 @@
+// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
 const path = require('path');
 
 const app = express();
 const port = 3000;
 
 // Telegram Bot Token (Ensure this is kept secure)
-const token = '7247835860:AAHi08y99fZPkS1Drd8-xwtv0ZnO3pgDOqM';
+const token = '7247835860:AAHi08y99fZPkS1Drd8-xwtv0ZnO3pgDOqM'; // Replace with your actual token
 const bot = new TelegramBot(token, { polling: true });
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -19,6 +19,11 @@ let students = {
     Emile: { age: 12, grade: 85, behavior: 'Excellent', photo: 'https://images.freeimages.com/fic/images/icons/2711/free_icons_for_windows8_metro/512/guest.png?fmt=webp&h=350' },
     Ali: { age: 11, grade: 90, behavior: 'Satisfactory', photo: 'https://images.freeimages.com/fic/images/icons/2711/free_icons_for_windows8_metro/512/guest.png?fmt=webp&h=350' },
 };
+
+let news = [
+    { title: 'School Reopens', content: 'School reopens on September 15th.', photo: 'https://example.com/news1.jpg' },
+    { title: 'New Activities', content: 'New extracurricular activities announced.', photo: 'https://example.com/news2.jpg' },
+];
 
 // Middleware for ngrok warning bypass
 app.use((req, res, next) => {
@@ -31,28 +36,36 @@ app.get('/students', (req, res) => {
     res.json(students);
 });
 
-// Telegram Bot Commands
+// Endpoint to get news data
+app.get('/news', (req, res) => {
+    res.json(news);
+});
 
-// /start command
+// Telegram Bot Commands
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const welcomeMessage = `
-Welcome to the Student Management Bot!
-Available commands:
-/add_student <name> <age> <grade> <behavior> - Add a new student.
-/update_grade <name> <grade> - Update a student's grade.
-/update_age <name> <age> - Update a student's age.
-/update_behavior <name> <behavior> - Update a student's behavior.
-/rename <oldName> <newName> - Rename a student.
-/view_student <name> - View a student's details.
-/list_students - List all students.
-/help - Show this help message.
-/photo - Upload a photo with the student name as the caption to update their photo.
-`;
+        Welcome to the Student and News Management Bot!
+        Available commands:
+        /add_student <name> <age> <grade> <behavior> - Add a new student.
+        /update_grade <name> <grade> - Update a student's grade.
+        /update_age <name> <age> - Update a student's age.
+        /update_behavior <name> <behavior> - Update a student's behavior.
+        /rename <oldName> <newName> - Rename a student.
+        /update_student_photo <name> <photoUrl> - Update a student's photo.
+        /view_student <name> - View a student's details.
+        /list_students - List all students.
+        /add_news <title> <content> <photoUrl> - Add a new news article.
+        /update_news_title <oldTitle> <newTitle> - Update a news title.
+        /update_news_content <title> <newContent> - Update news content.
+        /update_news_photo <title> <photoUrl> - Update a news photo.
+        /list_news - List all news articles.
+        /help - Show this help message.
+    `;
     bot.sendMessage(chatId, welcomeMessage);
 });
 
-// Add a new student
+// Student Management Commands
 bot.onText(/\/add_student (.+) (\d+) (\d+) (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const name = match[1];
@@ -68,7 +81,6 @@ bot.onText(/\/add_student (.+) (\d+) (\d+) (.+)/, (msg, match) => {
     }
 });
 
-// Update a student's grade
 bot.onText(/\/update_grade (.+) (\d+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const name = match[1];
@@ -82,7 +94,6 @@ bot.onText(/\/update_grade (.+) (\d+)/, (msg, match) => {
     }
 });
 
-// Update a student's age
 bot.onText(/\/update_age (.+) (\d+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const name = match[1];
@@ -96,7 +107,6 @@ bot.onText(/\/update_age (.+) (\d+)/, (msg, match) => {
     }
 });
 
-// Update a student's behavior
 bot.onText(/\/update_behavior (.+) (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const name = match[1];
@@ -110,7 +120,6 @@ bot.onText(/\/update_behavior (.+) (.+)/, (msg, match) => {
     }
 });
 
-// Rename a student
 bot.onText(/\/rename (.+) (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const oldName = match[1];
@@ -125,7 +134,19 @@ bot.onText(/\/rename (.+) (.+)/, (msg, match) => {
     }
 });
 
-// View student details
+bot.onText(/\/update_student_photo (.+) (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const name = match[1];
+    const newPhotoUrl = match[2];
+
+    if (students[name]) {
+        students[name].photo = newPhotoUrl;
+        bot.sendMessage(chatId, `Updated ${name}'s photo.`);
+    } else {
+        bot.sendMessage(chatId, `Student ${name} not found.`);
+    }
+});
+
 bot.onText(/\/view_student (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const name = match[1];
@@ -138,57 +159,64 @@ bot.onText(/\/view_student (.+)/, (msg, match) => {
     }
 });
 
-// List all students
 bot.onText(/\/list_students/, (msg) => {
     const chatId = msg.chat.id;
     const studentNames = Object.keys(students).join(', ');
     bot.sendMessage(chatId, `Students: ${studentNames}`);
 });
 
-// Help command
-bot.onText(/\/help/, (msg) => {
+// News Management Commands
+bot.onText(/\/add_news (.+) (.+) (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
-    const helpMessage = `
-Available commands:
-/add_student <name> <age> <grade> <behavior> - Add a new student.
-/update_grade <name> <grade> - Update a student's grade.
-/update_age <name> <age> - Update a student's age.
-/update_behavior <name> <behavior> - Update a student's behavior.
-/rename <oldName> <newName> - Rename a student.
-/view_student <name> - View a student's details.
-/list_students - List all students.
-/photo - Upload a photo with the student name as the caption to update their photo.
-/help - Show this help message.
-`;
-    bot.sendMessage(chatId, helpMessage);
+    const [title, content, photo] = [match[1], match[2], match[3]];
+
+    news.push({ title, content, photo });
+    bot.sendMessage(chatId, `Added news article: "${title}"`);
 });
 
-// Handle photo uploads for updating student photos
-bot.on('photo', async (msg) => {
+bot.onText(/\/update_news_title (.+) (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
-    const name = msg.caption?.trim(); // Assume the student's name is sent as the caption
+    const [oldTitle, newTitle] = [match[1], match[2]];
 
-    if (!name || !students[name]) {
-        bot.sendMessage(chatId, `Please provide a valid student name as the photo caption.`);
-        return;
+    const article = news.find(n => n.title === oldTitle);
+    if (article) {
+        article.title = newTitle;
+        bot.sendMessage(chatId, `Updated news title to "${newTitle}"`);
+    } else {
+        bot.sendMessage(chatId, `News titled "${oldTitle}" not found.`);
     }
+});
 
-    // Get the largest photo size available
-    const photoArray = msg.photo;
-    const fileId = photoArray[photoArray.length - 1].file_id;
+bot.onText(/\/update_news_content (.+) (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const [title, newContent] = [match[1], match[2]];
 
-    try {
-        // Get the file path from Telegram
-        const fileResponse = await bot.getFile(fileId);
-        const fileUrl = `https://api.telegram.org/file/bot${token}/${fileResponse.file_path}`;
-
-        // Update the student's photo URL
-        students[name].photo = fileUrl;
-        bot.sendMessage(chatId, `Updated ${name}'s photo successfully!`);
-    } catch (error) {
-        console.error('Error fetching photo:', error);
-        bot.sendMessage(chatId, `Failed to update ${name}'s photo. Please try again.`);
+    const article = news.find(n => n.title === title);
+    if (article) {
+        article.content = newContent;
+        bot.sendMessage(chatId, `Updated content for news titled "${title}"`);
+    } else {
+        bot.sendMessage(chatId, `News titled "${title}" not found.`);
     }
+});
+
+bot.onText(/\/update_news_photo (.+) (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const [title, newPhotoUrl] = [match[1], match[2]];
+
+    const article = news.find(n => n.title === title);
+    if (article) {
+        article.photo = newPhotoUrl;
+        bot.sendMessage(chatId, `Updated photo for news titled "${title}"`);
+    } else {
+        bot.sendMessage(chatId, `News titled "${title}" not found.`);
+    }
+});
+
+bot.onText(/\/list_news/, (msg) => {
+    const chatId = msg.chat.id;
+    const newsTitles = news.map(n => n.title).join(', ');
+    bot.sendMessage(chatId, `News articles: ${newsTitles}`);
 });
 
 // Start the server
